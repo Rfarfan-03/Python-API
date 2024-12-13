@@ -11,7 +11,6 @@ from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.efficientnet import preprocess_input
 from tensorflow.keras.models import Model
 from pymilvus import MilvusClient
-import psycopg2
 from dotenv import load_dotenv
 import os
 import time
