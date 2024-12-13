@@ -23,8 +23,8 @@ async def Compare(request: Request):
     print("Longitud del array features: ", len(query_vector))
     
     
-    # Search with query_vector wrapped in a list
-    results = milvus_client.search(collection_name, [query_vector], limit=topk, search_params=search_params, anns_field="vectorCaracteristicas")
+   # Search with query_vector wrapped in a list
+    results = milvus_client.search(collection_name, [query_vector], limit=topk, search_params=search_params, anns_field="vectorCaracteristicas", output_fields=["identifier"])
     
     matching = {"Resultados" : []}
 
@@ -36,7 +36,7 @@ async def Compare(request: Request):
             if(match['distance'] > 0.5):
                 print(match)  # Access the 'id' of each match
                 product = {
-                    "identifier" : match["id"]
+                    "identifier" : match['entity']['identifier']
                 }
                 matching["Resultados"].append(product)
     
