@@ -17,7 +17,7 @@ async def Compare(request: Request):
     nq = 1
     search_params = {"metric_type": "COSINE"}
     topk = 10  # Request top 10 results
-    collection_name = "Caracteristicas_Imagenes"
+    collection_name = "Imagenes"
     
     query_vector, result = extract_features(body)
     print("Longitud del array features: ", len(query_vector))
@@ -33,15 +33,18 @@ async def Compare(request: Request):
     print("Top 10 results:")
     for result in results:
         for match in result:  # Each 'result' contains multiple matches
-            print(match)  # Access the 'id' of each match
-            product = {
-                "identifier" : match["id"]
-            }
-            matching["Resultados"].append(product)
+            if(match['distance'] > 0.5):
+                print(match)  # Access the 'id' of each match
+                product = {
+                    "identifier" : match["id"]
+                }
+                matching["Resultados"].append(product)
     
     print(matching)
             
     
     return matching 
+
+    
 
     

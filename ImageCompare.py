@@ -1,40 +1,42 @@
+#pip install numpy==1.23.5
 import numpy as np
 from numpy import linalg as LA
 import requests
 from PIL import Image
 from io import BytesIO
-from tensorflow.keras.applications.resnet50  import ResNet50
+from tensorflow.keras.applications import EfficientNetB0
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import GlobalAveragePooling2D
 from tensorflow.keras.preprocessing import image
-from tensorflow.keras.applications.resnet50 import preprocess_input
+from tensorflow.keras.applications.efficientnet import preprocess_input
 from tensorflow.keras.models import Model
 from pymilvus import MilvusClient
-#import psycopg2
+import psycopg2
 from dotenv import load_dotenv
 import os
 import time
-import json
 
-#Importar el modelo preentrenado de resnet
+#Importar el modelo preentrenado de efficientNet
 input_shape = (224, 224, 3)
-resnet_model = ResNet50(weights='imagenet', input_shape=input_shape, include_top = True)
-output = resnet_model.get_layer('avg_pool').output
-resnet_model = Model(resnet_model.input, output)
+efficientnet_model = EfficientNetB0(weights='imagenet', input_shape=input_shape, include_top=False)
+output = GlobalAveragePooling2D()(efficientnet_model.output)
+feature_extractor = Model(inputs=efficientnet_model.input, outputs=output)
 
-def extract_features(image_bytes):
+def extract_features(img_path):
         #response = requests.get(img_path)
         #if response.status_code != 200:
         #    print("Unable to fetch image from URL")
         #    return [] , False
         
         # Load the image into memory
-        img = Image.open(BytesIO(image_bytes))
-        #img = image.load_img(img_path, target_size=(input_shape[0], input_shape[1]))
+        #img = Image.open(BytesIO(response.content))
+        img = image.load_img(img_path, target_size=(input_shape[0], input_shape[1]))
         img = img.resize((input_shape[0], input_shape[1]))
         img = img.convert('RGB')
         img = image.img_to_array(img)
         img = np.expand_dims(img, axis=0)
         img = preprocess_input(img)
-        features = resnet_model.predict(img)
+        features = feature_extractor.predict(img)
         norm_features = features[0]/LA.norm(features[0])
         return norm_features, True
 
