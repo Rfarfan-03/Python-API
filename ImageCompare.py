@@ -21,15 +21,15 @@ efficientnet_model = EfficientNetB0(weights='imagenet', input_shape=input_shape,
 output = GlobalAveragePooling2D()(efficientnet_model.output)
 feature_extractor = Model(inputs=efficientnet_model.input, outputs=output)
 
-def extract_features(img_path):
+def extract_features(img_bytes):
         #response = requests.get(img_path)
         #if response.status_code != 200:
         #    print("Unable to fetch image from URL")
         #    return [] , False
         
         # Load the image into memory
-        #img = Image.open(BytesIO(response.content))
-        img = image.load_img(img_path, target_size=(input_shape[0], input_shape[1]))
+        img = Image.open(BytesIO(img_bytes.content))
+        #img = image.load_img(img_path, target_size=(input_shape[0], input_shape[1]))
         img = img.resize((input_shape[0], input_shape[1]))
         img = img.convert('RGB')
         img = image.img_to_array(img)
