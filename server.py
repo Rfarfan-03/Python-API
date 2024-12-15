@@ -9,6 +9,7 @@ app = FastAPI()
 
 @app.post("/getSimilarProducts")
 async def Compare(request: Request):
+    print(">>>>>HA LLEGADO UNA NUEVA PETICION<<<<<")
     load_dotenv()
     milvus_client = MilvusClient(uri=os.getenv("MILVUS_URI"), token=os.getenv("MILVUS_TOKEN"))
     #The body contains the bytes for the image
